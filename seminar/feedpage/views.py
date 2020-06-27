@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Feed, FeedComment , Like
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
+from django.http import JsonResponse 
 
 def index(request):
     if request.method == 'GET':
@@ -57,4 +58,32 @@ def feed_like(request, pk):
     else:
         Like.objects.create(user_id = request.user.id, feed_id = feed.id)
     return redirect('/feeds')
+
+def create_comment(request,id):
+    content = request.POST['content']
+    FeedComment.objects.create(feed_id=id, content=content, author=request.user)
+    new_comment = FeedComment.objects.latest('id')
+
+    context = {
+        'id': new_comment.id,
+        'username': new_comment.author.username,
+        'content': new_comment.content,
+    }
+
+    return JsonResponse(context)
+
+def feed_like(request, pk):
+    feed = Feed.objects.get(id = pk)
+    like_list = feed.like_set.filter(user_id = request.user.id)
+    if like_list.count() > 0:
+        feed.like_set.get(user_id = request.user.id).delete()
+    else:
+        Like.objects.create(user_id = request.user.id, feed_id = feed.id)
     
+    context = {
+        'fid': feed.id,
+        'like_count': like_list.count()
+    }
+    
+    return JsonResponse(context)
+    # return redirect('/feeds') # 삭제
