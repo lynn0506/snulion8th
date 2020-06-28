@@ -87,6 +87,7 @@ $(".feed-like").click((e) => {
         const count = parseInt($this.attr('data-badge'));
         if(response.like_count > 0) {
             $this.attr('data-badge', count+1);
+            // 요청이 끝난 후 눈에 보이는 값도 변경해주는 것 그래서 +1
         } else {
             $this.attr('data-badge', count-1);
         }  
