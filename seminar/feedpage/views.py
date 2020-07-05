@@ -8,12 +8,14 @@ def index(request):
     if request.method == 'GET':
         feeds = Feed.objects.all()
         return render(request,'feedpage/index.html',{'feeds':feeds})
+
     elif request.method == 'POST':
         title = request.POST['title']
         content = request.POST['content']
         photo = request.FILES.get('photo',False)
         Feed.objects.create(title=title, content=content, author= request.user, photo=photo)
-        return redirect('/feeds')
+        # return redirect('/feeds')
+        return JsonResponse({"message": "created!!"}, status=201)
 
 def new(request):
     return render(request, 'feedpage/new.html')
@@ -87,3 +89,6 @@ def feed_like(request, pk):
     
     return JsonResponse(context)
     # return redirect('/feeds') # 삭제
+
+def map(request):                                #추가
+    return render(request,'feedpage/map.html')   #추가
